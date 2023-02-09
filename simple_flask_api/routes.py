@@ -2,20 +2,37 @@ from simple_flask_api import app, mysql
 from flask import jsonify, request
 
 @app.route('/users', methods=['GET'])
-def fetch_users():
+def fetch_all_users():
     try:
         con_cur = mysql.connection.cursor()
-        con_cur.execute("""SELECT id, fname, lname, gender, email
-                        FROM users""")
+        con_cur.execute("SELECT * FROM users")
         result = con_cur.fetchall()
-        response = jsonify({"data": result})
-        response.status_code = 200
-        return response
+        if result:
+            return jsonify({"data": result}), 200
+        else:
+            return jsonify({"message": "No data found"}), 404
     except Exception as e:
         print(e)
     finally:
         con_cur.close()
         
+
+@app.route('/user/<int:id>', methods=['GET'])
+def fetch_single_user(id):
+    try:
+        con_cur = mysql.connection.cursor()
+        con_cur.execute("SELECT * FROM users WHERE id = {}".format(id))
+        result = con_cur.fetchone()
+        if result:
+            return jsonify({"data": result}), 200
+        else:
+            return jsonify({"error": "No related data found ☹️"}), 404
+    except Exception as e:
+        print(e)
+    finally:
+        con_cur.close()      
+        
+
 @app.route('/create', methods=['POST'])
 def create_user():
     try:        
@@ -38,14 +55,14 @@ def create_user():
                 mysql.connection.commit()
                 conn_cursor.close()
                 
-                return jsonify({"message": "User created successfully 🥳 "}), 200              
+                return jsonify({"message": "User created successfully 🥳 "}), 201              
                 
             else:
-                return jsonify({"message": "Some data is missing 🙁 "}), 200
+                return jsonify({"error": "Some data is missing 🙁 "}), 206
               
         else:
-            return jsonify({"message": "Bad Request: Request body must be JSON ☠️ "}), 400
+            return jsonify({"error": "Request body must be JSON ☠️ "}), 400
         
     except Exception as e:
-        return jsonify({"message": "Something went wrong ☠️ "}), 400
+        return jsonify({"error": "Something went wrong ☠️ "}), 400
         print(e)
