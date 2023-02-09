@@ -68,7 +68,6 @@ def delete_user(id):
         con_cur.execute("SELECT * FROM users WHERE id = %s", (id,))
         user_exist = con_cur.fetchone()  
         
-        # return "WORKING !"
         if user_exist and request.method == 'DELETE':
             con_cur.execute("DELETE FROM users WHERE id = %s", (id,))
             mysql.connection.commit()
