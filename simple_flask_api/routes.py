@@ -1,7 +1,7 @@
 from simple_flask_api import app, mysql
 from flask import jsonify, request
 
-@app.route('/users', methods=['GET'])
+@app.route('/api/users', methods=['GET'])
 def fetch_all_users():
     try:
         con_cur = mysql.connection.cursor()
@@ -17,7 +17,7 @@ def fetch_all_users():
         con_cur.close()
         
 
-@app.route('/user/<int:id>', methods=['GET'])
+@app.route('/api/user/<int:id>', methods=['GET'])
 def fetch_single_user(id):
     try:
         con_cur = mysql.connection.cursor()
@@ -33,7 +33,7 @@ def fetch_single_user(id):
         con_cur.close()      
         
 
-@app.route('/create', methods=['POST'])
+@app.route('/api/create', methods=['POST'])
 def create_user():
     try:        
         if request.is_json and request.method == 'POST':           
